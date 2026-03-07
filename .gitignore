@@ -1,0 +1,29 @@
+﻿# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+.jdtls/
+bin/
+
+# Backend (Spring Boot / Maven)
+**/target/
+**/build/
+backend/*.jar
+backend/*.war
+
+# Frontend (Node / React)
+**/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env*
+!frontend/.env.example
+
+# OS & Logs
+.DS_Store
+Thumbs.db
+*.log
+
+# Spring Boot Secrets 
+backend/src/main/resources/application-secrets.properties

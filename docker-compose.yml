@@ -1,0 +1,26 @@
+﻿services:
+  db:
+    image: postgres:15
+    container_name: booking_db
+    environment:
+      POSTGRES_USER: comp307_admin
+      POSTGRES_PASSWORD: secure_dev_password
+      POSTGRES_DB: mcgill_booking
+    ports:
+      - "5433:5432" # Changed host port to 5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: booking_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mcgill.ca
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
