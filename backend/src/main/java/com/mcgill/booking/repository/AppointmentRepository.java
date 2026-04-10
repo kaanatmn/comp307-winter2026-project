@@ -2,15 +2,14 @@ package com.mcgill.booking.repository;
 
 import com.mcgill.booking.entity.Appointment;
 import com.mcgill.booking.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    // Find all bookings made by a specific Student
-    List<Appointment> findByUser(User user);
+public interface AppointmentRepository extends CrudRepository<Appointment, Long> {
     
-    // Find all attendees for a specific slot (Type 2 Group meetings)
-    List<Appointment> findByBookingSlotId(Long slotId);
+    // FIXED: Changed findByUser to findByStudent to match the Appointment entity
+    List<Appointment> findByStudent(User student); 
 }
