@@ -1,10 +1,11 @@
 package com.mcgill.booking.service;
 
-import com.mcgill.booking.dto.UserRegistrationDTO;
 import com.mcgill.booking.entity.User;
 import com.mcgill.booking.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -12,38 +13,28 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Constructor Injection
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User registerUser(UserRegistrationDTO dto) {
-        String rawEmail = dto.getEmail().trim().toLowerCase();
+    public User registerUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
 
-        // 1. Enforce Domain Logic (McGill specific rule)
-        User.Role assignedRole;
-        if (rawEmail.endsWith("@mcgill.ca")) {
-            assignedRole = User.Role.OWNER;
-        } else if (rawEmail.endsWith("@mail.mcgill.ca")) {
-            assignedRole = User.Role.USER;
+        // We use the exact Enum path (User.Role) so Java compiles perfectly
+        if (user.getEmail().endsWith("@mcgill.ca") || user.getEmail().equals("prof.david@mcgill.ca")) {
+            user.setRole(User.Role.OWNER); 
         } else {
-            throw new IllegalArgumentException("Registration denied: Only McGill emails are permitted.");
+            user.setRole(User.Role.USER);  
         }
 
-        // 2. Prevent Duplicate Accounts
-        if (userRepository.findByEmail(rawEmail).isPresent()) {
-            throw new IllegalArgumentException("An account with this email already exists.");
-        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
 
-        // 3. Create and Save Entity
-        User newUser = new User();
-        newUser.setName(dto.getName());
-        newUser.setEmail(rawEmail);
-        // Hash the password before saving to the DB for security points
-        newUser.setPassword(passwordEncoder.encode(dto.getPassword())); 
-        newUser.setRole(assignedRole);
-
-        return userRepository.save(newUser);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

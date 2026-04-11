@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-// @CrossOrigin("*") // Uncomment this later when connecting React!
 public class AuthController {
 
     private final UserService userService;
@@ -37,11 +36,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDTO dto) {
         try {
-            User registeredUser = userService.registerUser(dto);
+            // FIX: Unpack the DTO and map it to a real User entity before passing to the service
+            User newUser = new User();
+            newUser.setName(dto.getName());
+            newUser.setEmail(dto.getEmail());
+            newUser.setPassword(dto.getPassword());
+
+            User registeredUser = userService.registerUser(newUser);
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of("message", "User registered successfully", "email", registeredUser.getEmail())
             );
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
@@ -66,12 +72,16 @@ public class AuthController {
         // 3. Generate Token
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        // 4. Return the Token and User Info to the frontend
+        // 4. FIX: Return the Token and a grouped User object exactly as React's AuthContext expects it
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("role", user.getRole());
-        response.put("name", user.getName());
-        response.put("email", user.getEmail());
+        
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("role", user.getRole().name()); // Converts Enum to safe String
+        userMap.put("name", user.getName());
+        userMap.put("email", user.getEmail());
+        
+        response.put("user", userMap);
 
         return ResponseEntity.ok(response);
     }
