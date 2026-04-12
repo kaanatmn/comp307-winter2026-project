@@ -15,44 +15,47 @@ public class TimeSlot {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    // NEW: Tracks which student booked this slot
     @ManyToOne
     @JoinColumn(name = "student_id")
     private User student;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(nullable = false)
+    @Column(name = "is_booked", nullable = false)
     private boolean isBooked = false;
 
-    // NEW: Rubric requires slots to start private until activated
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
+
+    // --- NEW: Grouping and Naming Fields ---
+    @Column(name = "meeting_type")
+    private String type = "1-on-1";
+
+    @Column(name = "title")
+    private String title = "Office Hours";
 
     public TimeSlot() {}
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
-
     public User getStudent() { return student; }
     public void setStudent(User student) { this.student = student; }
-
     public LocalDateTime getStartTime() { return startTime; }
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
-
     public LocalDateTime getEndTime() { return endTime; }
     public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
-
     public boolean isBooked() { return isBooked; }
     public void setBooked(boolean booked) { isBooked = booked; }
-
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 }

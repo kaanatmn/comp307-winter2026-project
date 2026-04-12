@@ -27,7 +27,11 @@ public class TimeSlotController {
             String email = authentication.getName(); 
             LocalDateTime start = LocalDateTime.parse(request.get("startTime"));
             LocalDateTime end = LocalDateTime.parse(request.get("endTime"));
-            timeSlotService.createSlot(email, start, end);
+            
+            // NEW: Grab the weeks parameter
+            int weeks = request.containsKey("weeks") ? Integer.parseInt(request.get("weeks")) : 1;
+            timeSlotService.createSlot(email, start, end, weeks);
+            
             return ResponseEntity.ok(Map.of("message", "Created successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -46,6 +50,8 @@ public class TimeSlotController {
             map.put("endTime", slot.getEndTime().toString());
             map.put("isActive", slot.isActive());
             map.put("isBooked", slot.isBooked());
+            map.put("type", slot.getType() != null ? slot.getType() : "1-on-1");
+            map.put("title", slot.getTitle() != null ? slot.getTitle() : "Office Hours");
             
             if (slot.getStudent() != null) {
                 map.put("studentName", slot.getStudent().getName());
@@ -68,19 +74,19 @@ public class TimeSlotController {
             map.put("endTime", slot.getEndTime().toString());
             map.put("profName", slot.getOwner().getName());
             map.put("profEmail", slot.getOwner().getEmail());
+            map.put("type", slot.getType() != null ? slot.getType() : "1-on-1");
+            map.put("title", slot.getTitle() != null ? slot.getTitle() : "Office Hours");
             return map;
         }).toList();
         
         return ResponseEntity.ok(cleanSlots);
     }
 
-    // NEW: Get available slots for ONE specific professor via their Invitation Link
     @GetMapping("/available/{email}")
     public ResponseEntity<?> getProfessorSlots(@PathVariable String email) {
         List<TimeSlot> availableSlots = timeSlotService.getAllAvailableSlots();
         
         List<Map<String, Object>> cleanSlots = availableSlots.stream()
-            // Filter down to just the requested professor
             .filter(slot -> slot.getOwner().getEmail().equalsIgnoreCase(email))
             .map(slot -> {
                 Map<String, Object> map = new HashMap<>();
@@ -89,6 +95,8 @@ public class TimeSlotController {
                 map.put("endTime", slot.getEndTime().toString());
                 map.put("profName", slot.getOwner().getName());
                 map.put("profEmail", slot.getOwner().getEmail());
+                map.put("type", slot.getType() != null ? slot.getType() : "1-on-1");
+                map.put("title", slot.getTitle() != null ? slot.getTitle() : "Office Hours");
                 return map;
             }).toList();
         
@@ -107,6 +115,8 @@ public class TimeSlotController {
             map.put("endTime", slot.getEndTime().toString());
             map.put("profName", slot.getOwner().getName());
             map.put("profEmail", slot.getOwner().getEmail());
+            map.put("type", slot.getType() != null ? slot.getType() : "1-on-1");
+            map.put("title", slot.getTitle() != null ? slot.getTitle() : "Office Hours");
             return map;
         }).toList();
         

@@ -20,15 +20,21 @@ public class TimeSlotService {
         this.userRepository = userRepository;
     }
 
-    public TimeSlot createSlot(String email, LocalDateTime startTime, LocalDateTime endTime) {
+    // NEW: Added the 'weeks' parameter for Type 3 recurring slots!
+    public void createSlot(String email, LocalDateTime startTime, LocalDateTime endTime, int weeks) {
         User owner = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Owner not found"));
-        TimeSlot slot = new TimeSlot();
-        slot.setOwner(owner);
-        slot.setStartTime(startTime);
-        slot.setEndTime(endTime);
-        slot.setBooked(false);
-        slot.setActive(false); // Starts private per rubric
-        return timeSlotRepository.save(slot);
+        
+        for (int i = 0; i < weeks; i++) {
+            TimeSlot slot = new TimeSlot();
+            slot.setOwner(owner);
+            slot.setStartTime(startTime.plusWeeks(i));
+            slot.setEndTime(endTime.plusWeeks(i));
+            slot.setBooked(false);
+            slot.setActive(false);
+            slot.setType("1-on-1");
+            slot.setTitle("Office Hours");
+            timeSlotRepository.save(slot);
+        }
     }
 
     public List<TimeSlot> getSlotsByOwner(String email) {
@@ -52,12 +58,10 @@ public class TimeSlotService {
         return timeSlotRepository.save(slot);
     }
 
-    // NEW: Deactivate Slot Logic
     public TimeSlot deactivateSlot(Long slotId, String ownerEmail) {
         TimeSlot slot = timeSlotRepository.findById(slotId).orElseThrow(() -> new RuntimeException("Slot not found"));
         if (!slot.getOwner().getEmail().equals(ownerEmail)) throw new RuntimeException("Unauthorized");
         if (slot.isBooked()) throw new RuntimeException("Cannot deactivate a booked slot. Cancel the appointment first.");
-        
         slot.setActive(false);
         return timeSlotRepository.save(slot);
     }
@@ -71,9 +75,7 @@ public class TimeSlotService {
     public TimeSlot bookSlot(Long slotId, String studentEmail) {
         TimeSlot slot = timeSlotRepository.findById(slotId).orElseThrow(() -> new RuntimeException("Slot not found"));
         User student = userRepository.findByEmail(studentEmail).orElseThrow(() -> new RuntimeException("Student not found"));
-        
         if (slot.isBooked() || !slot.isActive()) throw new RuntimeException("Slot is not available");
-        
         slot.setBooked(true);
         slot.setStudent(student);
         return timeSlotRepository.save(slot);
@@ -84,7 +86,6 @@ public class TimeSlotService {
         if (slot.getStudent() == null || !slot.getStudent().getEmail().equals(studentEmail)) {
             throw new RuntimeException("Unauthorized");
         }
-        
         slot.setBooked(false);
         slot.setStudent(null);
         return timeSlotRepository.save(slot);
