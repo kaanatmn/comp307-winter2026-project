@@ -9,9 +9,11 @@ import java.util.List;
 @Repository
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     
-    // Custom magic query to find all slots created by a specific professor
     List<TimeSlot> findByOwnerId(Long ownerId);
     
-    // Custom magic query to find slots that haven't been booked by students yet
-    List<TimeSlot> findByIsBookedFalse();
+    // NEW: Find slots for the Student Directory (Must be unbooked AND activated)
+    List<TimeSlot> findByIsBookedFalseAndIsActiveTrue();
+
+    // NEW: Find all slots a specific student has booked
+    List<TimeSlot> findByStudentId(Long studentId);
 }

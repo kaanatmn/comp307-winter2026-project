@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import OwnerDashboard from './pages/OwnerDashboard';
 import StudentDashboard from './pages/StudentDashboard';
+import ProfessorBookingPage from './pages/ProfessorBookingPage'; // NEW IMPORT
 
 function App() {
   return (
@@ -19,9 +20,10 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              {/* These are the two missing routes! */}
               <Route path="/owner-dashboard" element={<OwnerDashboard />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
+              {/* NEW: The custom professor booking link route */}
+              <Route path="/book/:email" element={<ProfessorBookingPage />} />
             </Routes>
           </main>
         </div>
