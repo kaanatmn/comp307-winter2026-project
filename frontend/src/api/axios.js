@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Create a customized axios instance pointing to your Spring Boot backend
+// Create a customized axios instance pointing to your live Spring Boot backend
 const api = axios.create({
-    baseURL: 'http://localhost:8088/api', 
+    baseURL: 'https://comp307-winter2026-project.onrender.com/api'
 });
 
 // Intercept requests to automatically attach the JWT token if the user is logged in
