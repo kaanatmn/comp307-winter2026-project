@@ -27,7 +27,6 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
     private final CustomUserDetailsService userDetailsService;
 
-    // We now inject the new independent UserDetailsService
     public SecurityConfig(JwtRequestFilter jwtRequestFilter, CustomUserDetailsService userDetailsService) {
         this.jwtRequestFilter = jwtRequestFilter;
         this.userDetailsService = userDetailsService;
@@ -36,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Use the injected service
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -71,9 +70,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
+        
+        // RITICAL change: Added live Vercel domain to the trust list
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:5173", 
+            "https://comp307-winter2026-project.vercel.app"
+        )); 
+        
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
