@@ -1,6 +1,8 @@
 ﻿# COMP 307 Winter 2026 Project: McBook (McGill Booking App)
 
-**URL TO RUNNING WEBSITE:** [link to website ...]
+**URL TO RUNNING WEBSITE:** https://comp307-winter2026-project.vercel.app/
+
+> **Note on Live Deployment:** The backend is hosted on Render's free tier. If the application has been inactive, the very first request (like logging in) may take **50–60 seconds** to wake the server up. Subsequent requests will be fast. Please be patient on the first load!
 
 ## Team Members & Contributions
 *The following table outlines the team members and the code they worked on.*
