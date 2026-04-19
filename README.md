@@ -9,9 +9,9 @@
 
 | Name | Student ID | Code Worked On (Contributions) |
 | :--- | :--- | :--- |
-| **Kaan Ataman (Leader)** | 261163904 | [tasks done] |
-| **David Namgung** | 261183180 | [tasks done] |
-| **Jessie Maeda-Yang** | 261179687 | [tasks done] |
+| **Kaan Ataman (Leader)** | 261163904 | Backend Architecture, Spring Boot Controllers & Services, Core Business Logic, Cloud Deployment |
+| **David Namgung** | 261183180 | UI/UX Web Design, Database Schema Design, JPA Entity Modeling |
+| **Jessie Maeda-Yang** | 261179687 | Frontend React Development, API Integration, Component Implementation |
 
 ---
 
