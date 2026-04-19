@@ -47,9 +47,13 @@ export default function StudentDashboard() {
         finally { setIsLoading(false); }
     };
 
-    const handleBookSlot = async (slotId) => { try { await api.post(`/slots/${slotId}/book`); fetchAllData(); } catch (error) { alert("Failed to book slot."); } };
+    const handleBookSlot = async (slotId) => { 
+        try { 
+            await api.post(`/slots/${slotId}/book`); 
+            await fetchAllData(); 
+        } catch (error) { alert("Failed to book slot."); } 
+    };
     
-    // NEW: Triggers an email to the professor if the student cancels a booked slot!
     const handleCancelSlot = async (app) => {
         if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
         try { 
@@ -57,7 +61,7 @@ export default function StudentDashboard() {
             const subject = encodeURIComponent(`Appointment Cancelled`);
             const body = encodeURIComponent(`Hello ${app.profName},\n\nI am cancelling my appointment with you scheduled for ${new Date(app.startTime).toLocaleString()}.\n\nBest,\n${user.name}`);
             window.location.href = `mailto:${app.profEmail}?subject=${subject}&body=${body}`;
-            fetchAllData(); 
+            await fetchAllData(); 
         } catch (error) { alert("Failed to cancel slot."); }
     };
 
@@ -69,12 +73,16 @@ export default function StudentDashboard() {
             const body = encodeURIComponent(`Hello ${requestModal.profName},\n\nI have requested a custom meeting time on ${reqDate} at ${reqTime}.\n\nReason: ${reqMessage}\n\nPlease check your McBook dashboard to approve or decline.\n\nThanks,\n${user.name}`);
             window.location.href = `mailto:${requestModal.profEmail}?subject=${subject}&body=${body}`;
             setRequestModal({ isOpen: false, profEmail: '', profName: '' }); setReqDate(''); setReqTime(''); setReqMessage('');
+            await fetchAllData(); 
         } catch (error) { alert(error.response?.data?.error || "Failed to send request."); }
     };
 
     const handleVote = async (optionId) => {
-        try { await api.post(`/group/vote/${optionId}`); alert("Your vote has been recorded!"); fetchAllData(); } 
-        catch (error) { alert("Failed to vote."); }
+        try { 
+            await api.post(`/group/vote/${optionId}`); 
+            alert("Your vote has been recorded!"); 
+            await fetchAllData(); 
+        } catch (error) { alert("Failed to vote."); }
     };
 
     const exportToCalendar = (slot) => {

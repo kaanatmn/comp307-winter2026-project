@@ -15,7 +15,7 @@ export default function OwnerDashboard() {
     const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [repeatWeeks, setRepeatWeeks] = useState(1); // NEW
+    const [repeatWeeks, setRepeatWeeks] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
 
     const [pollTitle, setPollTitle] = useState('');
@@ -51,7 +51,6 @@ export default function OwnerDashboard() {
     const handleActivate = async (id) => { try { await api.post(`/slots/${id}/activate`); await fetchSlots(); } catch (error) { alert(`Activation Failed: ${error.response?.data?.error || error.message}`); } };
     const handleDeactivate = async (id) => { try { await api.post(`/slots/${id}/deactivate`); await fetchSlots(); } catch (error) { alert(`Hide Failed: ${error.response?.data?.error || error.message}`); } };
     
-    // NEW: Triggers an email to the student if the owner cancels a booked slot!
     const handleDelete = async (slotId, isBooked, studentEmail, studentName, startTimeStr) => {
         if (!window.confirm("Are you sure you want to delete this slot?")) return;
         try { 
@@ -68,7 +67,8 @@ export default function OwnerDashboard() {
     const handleApproveRequest = async (req) => {
         try {
             await api.post(`/requests/${req.id}/approve`);
-            await fetchPendingRequests(); await fetchSlots(); 
+            await fetchPendingRequests(); 
+            await fetchSlots(); 
             const subject = encodeURIComponent(`Meeting Request Approved`);
             const body = encodeURIComponent(`Hello ${req.studentName},\n\nI have approved your meeting request for ${new Date(req.requestedTime).toLocaleString()}.\n\nIt is now in your Student Dashboard.\n\nBest,\n${user.name}`);
             window.location.href = `mailto:${req.studentEmail}?subject=${subject}&body=${body}`;
@@ -78,7 +78,7 @@ export default function OwnerDashboard() {
     const handleDeclineRequest = async (req) => {
         try {
             await api.post(`/requests/${req.id}/decline`);
-            await fetchPendingRequests();
+            await fetchPendingRequests(); 
             const subject = encodeURIComponent(`Meeting Request Declined`);
             const body = encodeURIComponent(`Hello ${req.studentName},\n\nUnfortunately, I must decline your meeting request for ${new Date(req.requestedTime).toLocaleString()}.\n\nPlease check my availability for other times.\n\nBest,\n${user.name}`);
             window.location.href = `mailto:${req.studentEmail}?subject=${subject}&body=${body}`;
@@ -103,7 +103,6 @@ export default function OwnerDashboard() {
         } catch (error) { alert(error.response?.data?.error || "Failed to create poll."); } finally { setIsLoading(false); }
     };
 
-    // NEW: Asks the Owner how many weeks they want to repeat the winning Group slot!
     const handleFinalizePoll = async (poll, option) => {
         const weeksStr = window.prompt(`Are you sure you want to finalize this poll for ${new Date(option.startTime).toLocaleString()}?\n\nHow many consecutive weeks should this group meeting repeat? (Enter 1 for a one-time event)`, "1");
         if (weeksStr === null) return; 
@@ -111,7 +110,8 @@ export default function OwnerDashboard() {
 
         try {
             await api.post(`/group/finalize/${poll.id}/${option.id}?weeks=${weeks}`);
-            await fetchMyPolls(); await fetchSlots(); 
+            await fetchMyPolls(); 
+            await fetchSlots(); 
             alert("Poll Finalized! The shared meeting slots have been generated in your schedule.");
         } catch (error) { alert(error.response?.data?.error || "Failed to finalize poll."); }
     };
@@ -134,6 +134,17 @@ export default function OwnerDashboard() {
         const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
         const link = document.createElement('a'); link.href = window.URL.createObjectURL(blob);
         link.setAttribute('download', `meeting_${start}.ics`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    };
+
+    const handleCancelGroupSession = async (slotId, title) => {
+        if (!window.confirm(`Are you sure you want to cancel the entire group session "${title}"? This will remove all participants.`)) return;
+        try {
+            await api.delete(`/slots/${slotId}/delete`);
+            await fetchSlots(); 
+        } catch (error) {
+            console.error("Error canceling session:", error);
+            alert("Failed to cancel the session.");
+        }
     };
 
     const activeSlotsCount = slots.filter(s => s.isActive && !s.isBooked).length;
@@ -225,18 +236,23 @@ export default function OwnerDashboard() {
                                 <div className="flex flex-wrap items-center gap-3">
                                     {item.isGrouped ? (
                                         <div className="flex flex-col gap-3 bg-white border border-purple-200 p-4 rounded-xl shadow-sm w-full xl:w-auto">
-                                            <div className="flex items-center justify-between gap-6 border-b border-purple-100 pb-2"><span className="text-sm font-bold text-purple-800">Attendees ({item.attendees.length})</span><button onClick={() => exportToCalendar(item)} className="flex items-center gap-1.5 text-xs font-bold bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Download className="h-3.5 w-3.5" /> Export</button></div>
+                                            <div className="flex items-center justify-between gap-6 border-b border-purple-100 pb-2">
+                                                <span className="text-sm font-bold text-purple-800">Attendees ({item.attendees.length})</span>
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => exportToCalendar(item)} className="flex items-center gap-1.5 text-xs font-bold bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Download className="h-3.5 w-3.5" /> Export</button>
+                                                    <button onClick={() => handleCancelGroupSession(item.id, item.title)} className="flex items-center gap-1.5 text-xs font-bold bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Trash2 className="h-3.5 w-3.5" /> Cancel Entire Session</button>
+                                                </div>
+                                            </div>
                                             <div className="flex flex-wrap gap-2">
-                                                {item.attendees.map(student => (
+                                                {item.attendees.length > 0 ? item.attendees.map(student => (
                                                     <div key={student.slotId} className="flex items-center gap-1.5 bg-purple-50 px-2.5 py-1.5 rounded-lg border border-purple-100">
                                                         <span className="text-xs font-semibold text-purple-900">{student.name}</span>
                                                         <div className="flex items-center gap-1 ml-1 pl-2 border-l border-purple-200">
                                                             <a href={`mailto:${student.email}`} className="text-purple-500 hover:text-purple-700 p-0.5" title="Email Student"><Mail className="h-3.5 w-3.5" /></a>
-                                                            {/* Passing full deletion info to trigger student notification */}
                                                             <button onClick={() => handleDelete(student.slotId, true, student.email, student.name, item.startTime)} className="text-red-400 hover:text-red-600 p-0.5" title="Remove from Group"><X className="h-3.5 w-3.5" /></button>
                                                         </div>
                                                     </div>
-                                                ))}
+                                                )) : <span className="text-xs text-slate-400 italic">No attendees yet</span>}
                                             </div>
                                         </div>
                                     ) : item.isBooked ? (
@@ -276,7 +292,6 @@ export default function OwnerDashboard() {
                                     <div><label className="block text-sm font-semibold text-slate-700 mb-1.5">Start Time</label><select required value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mcgill-red/20 focus:border-mcgill-red bg-white"><option value="" disabled>Select Time</option>{timeOptions.map(t => <option key={`s-${t.value}`} value={t.value}>{t.label}</option>)}</select></div>
                                     <div><label className="block text-sm font-semibold text-slate-700 mb-1.5">End Time</label><select required value={endTime} onChange={(e) => setEndTime(e.target.value)} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mcgill-red/20 focus:border-mcgill-red bg-white"><option value="" disabled>Select Time</option>{timeOptions.map(t => <option key={`e-${t.value}`} value={t.value}>{t.label}</option>)}</select></div>
                                 </div>
-                                {/* NEW: The Recurring Weeks Selector */}
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">Repeat for (Weeks)</label>
                                     <input type="number" min="1" max="15" required value={repeatWeeks} onChange={(e) => setRepeatWeeks(e.target.value)} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mcgill-red/20 focus:border-mcgill-red bg-white" />
@@ -288,7 +303,6 @@ export default function OwnerDashboard() {
                 )}
             </AnimatePresence>
 
-            {/* Poll Modal omitted for brevity (it remains exactly the same as previously generated) */}
             <AnimatePresence>
                 {isPollModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
