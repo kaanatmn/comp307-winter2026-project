@@ -10,8 +10,6 @@ public class LoginDTO {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
-    // --- Explicit Getters and Setters ---
-
     public String getEmail() {
         return email;
     }

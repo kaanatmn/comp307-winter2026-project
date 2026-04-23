@@ -53,7 +53,6 @@ public class GroupMeetingController {
         } catch (Exception e) { return ResponseEntity.badRequest().body(Map.of("error", e.getMessage())); }
     }
 
-    // NEW: Grabs the weeks parameter
     @PostMapping("/finalize/{pollId}/{optionId}")
     public ResponseEntity<?> finalizePoll(Authentication authentication, @PathVariable Long pollId, @PathVariable Long optionId, @RequestParam(defaultValue = "1") int weeks) {
         try {

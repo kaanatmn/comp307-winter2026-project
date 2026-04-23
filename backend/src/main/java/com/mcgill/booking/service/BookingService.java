@@ -28,10 +28,7 @@ public class BookingService {
         this.userRepository = userRepository;
     }
 
-    // ==========================================
-    // OWNER ACTIONS
-    // ==========================================
-
+    // owner
     @Transactional
     public List<BookingSlot> createSlot(String ownerEmail, String title, LocalDateTime start, LocalDateTime end, BookingSlot.SlotType type, Integer recurringWeeks) {
         User owner = userRepository.findByEmail(ownerEmail)
@@ -97,10 +94,7 @@ public class BookingService {
         return slotRepository.findByOwner(owner);
     }
 
-    // ==========================================
-    // STUDENT ACTIONS
-    // ==========================================
-
+    // student
     @Transactional
     public Appointment bookSlot(Long slotId, String studentEmail) {
         BookingSlot slot = slotRepository.findById(slotId)
@@ -149,10 +143,7 @@ public class BookingService {
         return appointmentRepository.findByStudent(student);
     }
 
-    // ==========================================
-    // DELETION LOGIC 
-    // ==========================================
-
+    // deletion
     @Transactional
     public void deleteSlot(Long slotId, String ownerEmail) {
         BookingSlot slot = slotRepository.findById(slotId)

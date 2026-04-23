@@ -36,7 +36,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationDTO dto) {
         try {
-            // FIX: Unpack the DTO and map it to a real User entity before passing to the service
             User newUser = new User();
             newUser.setName(dto.getName());
             newUser.setEmail(dto.getEmail());
@@ -57,27 +56,27 @@ public class AuthController {
         String rawEmail = dto.getEmail().trim().toLowerCase();
         Optional<User> userOptional = userRepository.findByEmail(rawEmail);
 
-        // 1. Check if user exists
+        // 1. check if user exists
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid email or password"));
         }
 
         User user = userOptional.get();
 
-        // 2. Verify Password
+        // 2. verify password
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid email or password"));
         }
 
-        // 3. Generate Token
+        // 3. generate token
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        // 4. FIX: Return the Token and a grouped User object exactly as React's AuthContext expects it
+        // 4. return token
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("role", user.getRole().name()); // Converts Enum to safe String
+        userMap.put("role", user.getRole().name()); // convert enum to safe string
         userMap.put("name", user.getName());
         userMap.put("email", user.getEmail());
         

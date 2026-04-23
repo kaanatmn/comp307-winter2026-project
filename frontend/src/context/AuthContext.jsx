@@ -4,13 +4,11 @@ import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // Synchronously check local storage, but protect against corrupted data!
     const [user, setUser] = useState(() => {
         try {
             const storedUser = localStorage.getItem('mcbook_user');
             return storedUser ? JSON.parse(storedUser) : null;
         } catch (error) {
-            // If the data is corrupted, wipe it and default to logged out
             console.warn("Corrupted user data found in local storage. Clearing it.");
             localStorage.removeItem('mcbook_user');
             return null;
@@ -24,7 +22,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('mcbook_user', JSON.stringify(userData));
         setUser(userData);
         
-        // Route based on role
+        // route based on role
         if (userData.role === 'OWNER') {
             navigate('/owner-dashboard');
         } else {

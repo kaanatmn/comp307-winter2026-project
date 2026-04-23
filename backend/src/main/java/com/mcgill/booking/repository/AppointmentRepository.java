@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends CrudRepository<Appointment, Long> {
     
-    // FIXED: Changed findByUser to findByStudent to match the Appointment entity
     List<Appointment> findByStudent(User student); 
 }

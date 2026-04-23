@@ -26,7 +26,7 @@ export default function LandingPage() {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        {/* Dynamic Button Rendering based on Auth State */}
+                        {/* dynamic button */}
                         {!user ? (
                             <>
                                 <Link to="/register" className="group flex justify-center items-center gap-2 bg-mcgill-red hover:bg-mcgill-dark text-white px-8 py-3.5 rounded-xl font-semibold text-lg shadow-md hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-200">

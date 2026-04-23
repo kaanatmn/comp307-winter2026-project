@@ -12,7 +12,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        {/* We keep the transparent styling here so the global gradient works everywhere! */}
+        {/* transparent styling */}
         <div className="min-h-screen flex flex-col font-sans">
           <Navbar />
           <main className="flex-grow">
@@ -22,7 +22,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/owner-dashboard" element={<OwnerDashboard />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
-              {/* NEW: The custom professor booking link route */}
+              {/* the custom professor booking link route */}
               <Route path="/book/:email" element={<ProfessorBookingPage />} />
             </Routes>
           </main>

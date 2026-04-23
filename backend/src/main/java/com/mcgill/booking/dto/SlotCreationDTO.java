@@ -22,10 +22,7 @@ public class SlotCreationDTO {
     @NotNull(message = "Slot type is required")
     private SlotType type;
 
-    // For Type 3 Recurring office hours
     private Integer recurringWeeks = 1;
-
-    // --- Explicit Getters and Setters ---
 
     public String getOwnerEmail() { return ownerEmail; }
     public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }

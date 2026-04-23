@@ -10,31 +10,28 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The slot being booked
+    // the slot being booked
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id", nullable = false)
     private BookingSlot slot;
 
-    // The @mail.mcgill.ca student who booked it
+    // the @mail.mcgill.ca student who booked it
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
 
-    // Critical for Type 1 (Meeting Requests) where Owner must approve
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.APPROVED; 
 
     public enum Status {
-        PENDING,   // Used for Type 1 requests
-        APPROVED,  // Used for standard Type 3 office hours
+        PENDING,   
+        APPROVED,  
         DECLINED
     }
 
     public Appointment() {
     }
-
-    // --- Explicit Getters and Setters ---
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

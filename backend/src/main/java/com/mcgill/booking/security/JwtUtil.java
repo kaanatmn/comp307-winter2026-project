@@ -12,12 +12,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // This pulls the secret key from your application-secrets.properties file!
     @Value("${jwt.secret}")
     private String secretString;
 
-    // Tokens expire after 24 hours (in milliseconds)
-    private final long EXPIRATION_TIME = 86400000;
+    private final long EXPIRATION_TIME = 86400000; // timestamp
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretString.getBytes());

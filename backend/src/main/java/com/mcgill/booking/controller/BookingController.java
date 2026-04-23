@@ -21,10 +21,6 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    // ==========================================
-    // OWNER ENDPOINTS
-    // ==========================================
-
     @PostMapping("/slots")
     public ResponseEntity<?> createSlot(@RequestBody SlotCreationDTO dto) {
         try {
@@ -52,7 +48,6 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getOwnerSlots(ownerEmail));
     }
 
-    // NEW: Get only active slots for a specific owner
     @GetMapping("/owner/{ownerEmail}/slots/active")
     public ResponseEntity<List<BookingSlot>> getActiveSlotsForOwner(@PathVariable String ownerEmail) {
         return ResponseEntity.ok(bookingService.getActiveSlotsForOwner(ownerEmail));
@@ -67,10 +62,6 @@ public class BookingController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-
-    // ==========================================
-    // STUDENT ENDPOINTS
-    // ==========================================
 
     @GetMapping("/slots/active")
     public ResponseEntity<List<BookingSlot>> getActiveSlots() {
@@ -92,10 +83,6 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getStudentAppointments(studentEmail));
     }
 
-    // ==========================================
-    // DELETE ENDPOINTS
-    // ==========================================
-
     @DeleteMapping("/slots/{slotId}")
     public ResponseEntity<?> deleteSlot(@PathVariable Long slotId, @RequestParam String ownerEmail) {
         try {
@@ -115,10 +102,6 @@ public class BookingController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
-
-    // ==========================================
-    // BONUS: EXPORT TO CALENDAR (.ics format)
-    // ==========================================
 
     @GetMapping(value = "/appointments/{appointmentId}/export", produces = "text/calendar")
     public ResponseEntity<String> exportToCalendar(@PathVariable Long appointmentId) {

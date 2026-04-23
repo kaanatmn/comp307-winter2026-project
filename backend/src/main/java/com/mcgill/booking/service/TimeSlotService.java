@@ -20,7 +20,6 @@ public class TimeSlotService {
         this.userRepository = userRepository;
     }
 
-    // NEW: Added the 'weeks' parameter for Type 3 recurring slots!
     public void createSlot(String email, LocalDateTime startTime, LocalDateTime endTime, int weeks) {
         User owner = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Owner not found"));
         

@@ -71,7 +71,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // RITICAL change: Added live Vercel domain to the trust list
         configuration.setAllowedOrigins(List.of(
             "http://localhost:5173", 
             "https://comp307-winter2026-project.vercel.app"

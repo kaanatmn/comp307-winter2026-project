@@ -34,22 +34,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String email = null;
         String jwt = null;
 
-        // Check if the request has the Bearer token
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
-                // FIXED: Now using your exact method name "extractEmail"
                 email = jwtUtil.extractEmail(jwt); 
             } catch (Exception e) {
                 System.out.println("Invalid or expired JWT Token");
             }
         }
 
-        // If an email was found, and the user isn't already logged into this specific request cycle
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
-            // FIXED: Now using your exact method name "isTokenValid" and verifying the email matches
             if (jwtUtil.isTokenValid(jwt) && email.equals(userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

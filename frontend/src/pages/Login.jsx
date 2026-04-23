@@ -14,7 +14,6 @@ export default function Login() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // FIXED: Grab the "memory" of where they came from (or default to null)
     const from = location.state?.from || null;
 
     const handleSubmit = async (e) => {
@@ -25,14 +24,12 @@ export default function Login() {
         try {
             const response = await api.post('/auth/login', { email, password });
             
-            // Log them in
+            // log them in
             login(response.data.user, response.data.token);
 
-            // FIXED: If they came from a custom link, send them back there!
             if (from) {
                 navigate(from);
             } else {
-                // Otherwise, send them to their default dashboard
                 if (response.data.user.role === 'OWNER') {
                     navigate('/owner-dashboard');
                 } else {

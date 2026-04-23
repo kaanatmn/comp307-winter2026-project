@@ -15,8 +15,6 @@ public class UserRegistrationDTO {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
-    // --- Explicit Getters and Setters (No Lombok needed) ---
-
     public String getName() {
         return name;
     }

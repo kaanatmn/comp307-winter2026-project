@@ -63,7 +63,6 @@ public class GroupMeetingService {
         }
     }
 
-    // NEW: Added the 'weeks' parameter for Type 2 recurring polls!
     public void finalizePoll(String ownerEmail, Long pollId, Long winningOptionId, int weeks) {
         GroupPoll poll = pollRepository.findById(pollId).orElseThrow(() -> new RuntimeException("Poll not found"));
         if (!poll.getOwner().getEmail().equals(ownerEmail)) throw new RuntimeException("Unauthorized");

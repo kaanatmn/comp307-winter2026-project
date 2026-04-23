@@ -13,11 +13,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // FIXED: Renamed from 'passwordHash' to 'password' to match UserService
     @Column(nullable = false)
     private String password;
 
-    // FIXED: Combined firstName and lastName into 'name' to match your DTO and UserService
     @Column(nullable = false)
     private String name;
 
@@ -30,11 +28,8 @@ public class User {
         USER   
     }
 
-    // Explicit Default Constructor (Replaces @NoArgsConstructor)
     public User() {
     }
-
-    // --- Explicit Getters and Setters (No Lombok needed) ---
 
     public Long getId() {
         return id;

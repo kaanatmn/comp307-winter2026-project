@@ -46,16 +46,16 @@ public class MeetingRequestService {
         MeetingRequest request = requestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
         if (!request.getOwner().getEmail().equals(ownerEmail)) throw new RuntimeException("Unauthorized");
 
-        // Mark as approved
+        // mark as approved
         request.setStatus("APPROVED");
         requestRepository.save(request);
 
-        // Instantly generate the official booked TimeSlot for the dashboard
+        // instantly generate the official booked TimeSlot for the dashboard
         TimeSlot slot = new TimeSlot();
         slot.setOwner(request.getOwner());
         slot.setStudent(request.getStudent());
         slot.setStartTime(request.getRequestedTime());
-        slot.setEndTime(request.getRequestedTime().plusHours(1)); // Default 1 hour meeting
+        slot.setEndTime(request.getRequestedTime().plusHours(1)); 
         slot.setActive(true);
         slot.setBooked(true);
         timeSlotRepository.save(slot);

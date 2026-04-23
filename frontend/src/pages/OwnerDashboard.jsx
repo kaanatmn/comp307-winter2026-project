@@ -136,18 +136,16 @@ export default function OwnerDashboard() {
         link.setAttribute('download', `meeting_${start}.ics`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
     };
 
-    // FIXED: Now deletes ALL slots in the group at once and emails everyone via BCC
     const handleCancelGroupSession = async (title, startTimeStr, attendees) => {
         if (!window.confirm(`Are you sure you want to cancel the entire group session "${title}"? This will remove all participants.`)) return;
 
-        // Find ALL slots (base slot + all student booked slots) that share this title and time
         const slotsToDelete = slots.filter(s => s.type === 'GROUP' && s.title === title && s.startTime === startTimeStr);
         
         try {
-            // Delete all of them simultaneously
+            // delete all of them simultaneously
             await Promise.all(slotsToDelete.map(s => api.delete(`/slots/${s.id}/delete`)));
             
-            // Send ONE email to everyone using BCC so they don't see each other's emails
+            // send ONE email to everyone using BCC so they don't see each other's emails
             if (attendees && attendees.length > 0) {
                 const bccEmails = attendees.map(a => a.email).join(',');
                 const subject = encodeURIComponent(`Group Session Cancelled: ${title}`);

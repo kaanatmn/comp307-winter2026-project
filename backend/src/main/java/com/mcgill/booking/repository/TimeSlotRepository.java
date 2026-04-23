@@ -11,9 +11,7 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     
     List<TimeSlot> findByOwnerId(Long ownerId);
     
-    // NEW: Find slots for the Student Directory (Must be unbooked AND activated)
     List<TimeSlot> findByIsBookedFalseAndIsActiveTrue();
 
-    // NEW: Find all slots a specific student has booked
     List<TimeSlot> findByStudentId(Long studentId);
 }

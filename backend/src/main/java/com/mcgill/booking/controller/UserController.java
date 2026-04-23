@@ -20,10 +20,9 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // PDF Requirement: Listing feature to see all @mcgill.ca owners
     @GetMapping("/owners")
     public ResponseEntity<List<User>> getAllOwners() {
-        // Fetch all users and filter for OWNER role
+        // fetch all users and filter for OWNER role
         List<User> owners = ((List<User>) userRepository.findAll()).stream()
                 .filter(user -> user.getRole() == User.Role.OWNER)
                 .collect(Collectors.toList());

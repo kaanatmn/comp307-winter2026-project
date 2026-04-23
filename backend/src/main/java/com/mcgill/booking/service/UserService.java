@@ -23,7 +23,6 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
 
-        // We use the exact Enum path (User.Role) so Java compiles perfectly
         if (user.getEmail().endsWith("@mcgill.ca") || user.getEmail().equals("prof.david@mcgill.ca")) {
             user.setRole(User.Role.OWNER); 
         } else {

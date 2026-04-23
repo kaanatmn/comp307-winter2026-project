@@ -65,7 +65,7 @@ export default function ProfessorBookingPage() {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-12">
-            {/* FIXED: Button now explicitly navigates to the student dashboard */}
+            {/* go back button explicitly navigates to the student dashboard */}
             <button onClick={() => navigate('/student-dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-8 transition-colors font-medium">
                 <ArrowLeft className="h-5 w-5" /> Back to Dashboard
             </button>
