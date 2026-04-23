@@ -47,7 +47,6 @@ export default function ProfessorBookingPage() {
                 <User className="h-20 w-20 text-slate-300 mb-6" />
                 <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Login Required</h2>
                 <p className="text-slate-600 text-lg mb-8 max-w-md">You must be signed in with a McGill account to view availability and book an appointment with <b>{email}</b>.</p>
-                {/* FIXED: We are now passing the current URL in the state! */}
                 <Link to="/login" state={{ from: location.pathname }} className="bg-mcgill-red text-white px-8 py-3.5 rounded-xl font-bold shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
                     Sign In to Continue
                 </Link>
@@ -66,8 +65,9 @@ export default function ProfessorBookingPage() {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-12">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-8 transition-colors font-medium">
-                <ArrowLeft className="h-5 w-5" /> Go Back
+            {/* FIXED: Button now explicitly navigates to the student dashboard */}
+            <button onClick={() => navigate('/student-dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-8 transition-colors font-medium">
+                <ArrowLeft className="h-5 w-5" /> Back to Dashboard
             </button>
             
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-10 text-center mb-8">

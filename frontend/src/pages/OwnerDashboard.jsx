@@ -136,14 +136,29 @@ export default function OwnerDashboard() {
         link.setAttribute('download', `meeting_${start}.ics`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
     };
 
-    const handleCancelGroupSession = async (slotId, title) => {
+    // FIXED: Now deletes ALL slots in the group at once and emails everyone via BCC
+    const handleCancelGroupSession = async (title, startTimeStr, attendees) => {
         if (!window.confirm(`Are you sure you want to cancel the entire group session "${title}"? This will remove all participants.`)) return;
+
+        // Find ALL slots (base slot + all student booked slots) that share this title and time
+        const slotsToDelete = slots.filter(s => s.type === 'GROUP' && s.title === title && s.startTime === startTimeStr);
+        
         try {
-            await api.delete(`/slots/${slotId}/delete`);
+            // Delete all of them simultaneously
+            await Promise.all(slotsToDelete.map(s => api.delete(`/slots/${s.id}/delete`)));
+            
+            // Send ONE email to everyone using BCC so they don't see each other's emails
+            if (attendees && attendees.length > 0) {
+                const bccEmails = attendees.map(a => a.email).join(',');
+                const subject = encodeURIComponent(`Group Session Cancelled: ${title}`);
+                const body = encodeURIComponent(`Hello,\n\nI have cancelled the group session "${title}" scheduled for ${new Date(startTimeStr).toLocaleString()}.\n\nBest,\n${user.name}`);
+                window.location.href = `mailto:?bcc=${bccEmails}&subject=${subject}&body=${body}`;
+            }
+            
             await fetchSlots(); 
         } catch (error) {
             console.error("Error canceling session:", error);
-            alert("Failed to cancel the session.");
+            alert("Failed to cancel the entire session.");
         }
     };
 
@@ -240,7 +255,8 @@ export default function OwnerDashboard() {
                                                 <span className="text-sm font-bold text-purple-800">Attendees ({item.attendees.length})</span>
                                                 <div className="flex gap-2">
                                                     <button onClick={() => exportToCalendar(item)} className="flex items-center gap-1.5 text-xs font-bold bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Download className="h-3.5 w-3.5" /> Export</button>
-                                                    <button onClick={() => handleCancelGroupSession(item.id, item.title)} className="flex items-center gap-1.5 text-xs font-bold bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Trash2 className="h-3.5 w-3.5" /> Cancel Entire Session</button>
+                                                    {/* FIXED: Button now passes title, time, and attendees list */}
+                                                    <button onClick={() => handleCancelGroupSession(item.title, item.startTime, item.attendees)} className="flex items-center gap-1.5 text-xs font-bold bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded-lg transition-colors active:scale-95"><Trash2 className="h-3.5 w-3.5" /> Cancel Entire Session</button>
                                                 </div>
                                             </div>
                                             <div className="flex flex-wrap gap-2">
